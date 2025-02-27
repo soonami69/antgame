@@ -33,3 +33,8 @@ public:
 	}
 };
 
+// ChatGPT gave me this hash function
+FORCEINLINE uint32 GetTypeHash(const FGridCell& Cell) {
+	return HashCombineFast(GetTypeHash(Cell.X), GetTypeHash(Cell.Y));
+}
+

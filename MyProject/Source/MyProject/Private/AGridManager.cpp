@@ -32,7 +32,7 @@ void AGridManager::GenerateGrid()
     }
 }
 
-FGridCell AGridManager::GetFromIndex(int X, int Y)
+FGridCell AGridManager::GetFromIndex(int X, int Y) const
 {
     int Index = convertCoordsToArrayIndex(X, Y);
     if (Index != -1 && GridCells.IsValidIndex(Index))
@@ -52,7 +52,7 @@ FGridCell AGridManager::GetFromLocation(float X, float Y) const
     int yIndex = FMath::RoundToInt32((Y - halfTile) / CellSize);
 
     // return tile
-    return Get(xIndex, yIndex);
+    return GetFromIndex(xIndex, yIndex);
 }
 
 int AGridManager::convertCoordsToArrayIndex(int X, int Y) {

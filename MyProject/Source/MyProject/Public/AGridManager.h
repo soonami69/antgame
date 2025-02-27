@@ -35,7 +35,7 @@ public:
     FGridCell GetFromLocation(float X, float Y) const;
 
     UFUNCTION(BlueprintCallable, Category="Grid")
-    FGridCell GetFromIndex(int X, int Y);
+    FGridCell GetFromIndex(int X, int Y) const;
 
 private:
     // initializes an empty grid

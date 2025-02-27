@@ -43,11 +43,11 @@ class MYPROJECT_API UAStarPathfinding : public UObject
 
 public:
 	UAStarPathfinding(float cellSize) : cellSize(cellSize) {}
-	UAStarPathfinding() : cellSize(100) {}
+	UAStarPathfinding() : cellSize(100.f) {}
 
 	// function to find path from start to goal
 	UFUNCTION(BlueprintCallable, Category="Pathfinding")
-	TArray<FGridCell> FindPath(FGridCell start, FGridCell target, const TArray<FGridCell>& Grid);
+	TArray<FGridCell> FindPath(FGridCell start, FGridCell target);
 
 	~UAStarPathfinding();
 
@@ -70,7 +70,7 @@ private:
 	TMap<FGridCell, FPathfindingData> pathMap;
 
 	// Function to get neighbouring cells
-	TArray<FGridCell> GetNeighbors(const FGridCell& cell, const TArray<FGridCell>& grid);
+	TArray<FGridCell> GetNeighbors(const FGridCell& cell);
 
 	// Cost to Goal (Manhattan Distance)
 	int CalculateCostToTarget(FGridCell start, FGridCell target);

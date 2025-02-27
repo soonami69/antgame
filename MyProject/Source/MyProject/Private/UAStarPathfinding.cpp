@@ -9,14 +9,6 @@
 /**
 * Constructors/Destructors for the UAPathfinding class
 **/
-UAStarPathfinding::UAStarPathfinding()
-{
-}
-
-UAStarPathfinding::UAStarPathfinding(float cellSize) : cellSize(cellSize)
-{
-}
-
 UAStarPathfinding::~UAStarPathfinding()
 {
 }
@@ -27,7 +19,7 @@ void UAStarPathfinding::SetGrid(AGridManager* gridManager)
 }
 
 // FIND PATH
-TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target, const TArray<FGridCell>& grid)
+TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target)
 {
     // initialize all data structures required
     openList.Empty();
@@ -105,7 +97,7 @@ int UAStarPathfinding::CalculateCostToTarget(FGridCell start, FGridCell target)
 }
 
 // Function to enumerate valid neighbors
-TArray<FGridCell> UAStarPathfinding::GetNeighbors(const FGridCell& cell, const TArray<FGridCell>& grid)
+TArray<FGridCell> UAStarPathfinding::GetNeighbors(const FGridCell& cell)
 {
     TArray<FGridCell> neighbors;
 
@@ -115,7 +107,7 @@ TArray<FGridCell> UAStarPathfinding::GetNeighbors(const FGridCell& cell, const T
     };
 
     // check all directions
-    for (const auto direction : directions) {
+    for (const auto& direction : directions) {
         FGridCell neighbor = getGridCellFromLocation(cell.X + direction.X, cell.Y + direction.Y);
 
         if (neighbor.isWalkable)
