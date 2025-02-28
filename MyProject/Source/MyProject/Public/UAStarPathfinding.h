@@ -32,6 +32,8 @@ public:
 	FPathfindingData(int costSoFar, int costToGoal, FGridCell parent) : costSoFar(costSoFar), costToGoal(costToGoal),
 		parent(parent) {}
 
+	FPathfindingData() : costSoFar(0), costToGoal(0), parent(FGridCell()) {}
+
 	int getCost() const { return costSoFar + costToGoal; }
 };
 
@@ -45,18 +47,25 @@ public:
 	UAStarPathfinding(float cellSize) : cellSize(cellSize) {}
 	UAStarPathfinding() : cellSize(100.f) {}
 
+
 	// function to find path from start to goal
 	UFUNCTION(BlueprintCallable, Category="Pathfinding")
 	TArray<FGridCell> FindPath(FGridCell start, FGridCell target);
 
 	~UAStarPathfinding();
 
+	UFUNCTION(BlueprintCallable, Category="Grid Settings")
 	void SetGrid(AGridManager* gridManager);
 
-private:
-	// cell sizes
-	float cellSize;
+	UFUNCTION(BlueprintCallable, Category="Pathfinding")
+	static UAStarPathfinding* CreateAStarPathfinding(float cellSize);
 
+	// cell sizes
+	UPROPERTY(BlueprintReadWrite)
+	float cellSize;
+private:
+
+	UPROPERTY()
 	// GridManager instance
 	AGridManager* grid;
 
@@ -74,6 +83,4 @@ private:
 
 	// Cost to Goal (Manhattan Distance)
 	int CalculateCostToTarget(FGridCell start, FGridCell target);
-
-	FGridCell getGridCellFromLocation(int X, int Y);
 };

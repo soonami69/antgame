@@ -12,6 +12,10 @@ class MYPROJECT_API AGridManager : public AActor
     GENERATED_BODY()
 
 public:
+    // Method so that game state can create grids of a certain size
+    UFUNCTION(BlueprintCallable, Category="Configure")
+    void Initialize(int32 Width, int32 Height, float Size);
+
     AGridManager();
     AGridManager(int32 Width, int32 Height, float CellSize);
 
@@ -30,6 +34,10 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Grid")
     TArray<FGridCell> GridCells;
 
+    // Get the coordinates of the nearest cell to a certain location
+    UFUNCTION(BlueprintPure, Category="Grid")
+    FVector GetGridWorldLocation(float X, float Y, float Z) const;
+
     // Convert world location to grid cell
     UFUNCTION(BlueprintCallable, Category="Grid")
     FGridCell GetFromLocation(float X, float Y) const;
@@ -37,11 +45,23 @@ public:
     UFUNCTION(BlueprintCallable, Category="Grid")
     FGridCell GetFromIndex(int X, int Y) const;
 
+    UFUNCTION(BlueprintCallable, Category="Grid")
+    bool OccupyCellAtIndex(int X, int Y);
+
+    UFUNCTION(BlueprintCallable, Category="Grid")
+    bool UnoccupyCellAtIndex(int X, int Y);
+
+    UFUNCTION(BlueprintCallable, Category="Grid")
+    bool OccupyCellAtLocation(float X, float Y);
+
+    UFUNCTION(BlueprintCallable, Category = "Grid")
+    bool UnoccupyCellAtLocation(float X, float Y);
+
 private:
     // initializes an empty grid
     void GenerateGrid();
 
-    int convertCoordsToArrayIndex(int X, int Y);
+    int convertCoordsToArrayIndex(int X, int Y) const;
 
 protected:
     virtual void BeginPlay() override;

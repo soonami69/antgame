@@ -1,125 +1,112 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #include "UAStarPathfinding.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
 #include "Algo/MinElement.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogAStar, Log, All); // Define a log category
 
-/**
-* Constructors/Destructors for the UAPathfinding class
-**/
-UAStarPathfinding::~UAStarPathfinding()
-{
+UAStarPathfinding::~UAStarPathfinding() {
 }
 
-void UAStarPathfinding::SetGrid(AGridManager* gridManager)
-{
+UAStarPathfinding* UAStarPathfinding::CreateAStarPathfinding(float cellSize) {
+    UAStarPathfinding* PathfindingInstance = NewObject<UAStarPathfinding>();
+    PathfindingInstance->cellSize = cellSize;
+    return PathfindingInstance;
+}
+
+void UAStarPathfinding::SetGrid(AGridManager* gridManager) {
     grid = gridManager;
 }
 
 // FIND PATH
-TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target)
-{
+TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target) {
+    UE_LOG(LogAStar, Log, TEXT("Starting A* pathfinding from (%d, %d) to (%d, %d)"), start.X, start.Y, target.X, target.Y);
+
+    if (!grid) {
+        UE_LOG(LogAStar, Error, TEXT("GridManager is NULL! Ensure SetGrid() is called before FindPath()."));
+        return TArray<FGridCell>();
+    }
+
     // initialize all data structures required
     openList.Empty();
     closedSet.Empty();
     pathMap.Empty();
 
-    // add the starting cell to the openList
     openList.Add(start);
     pathMap.Add(start, FPathfindingData(0, CalculateCostToTarget(start, target), FGridCell()));
 
-    while (openList.Num() > 0)
-    {
-        // find the cell with the lowest total cost
+    while (openList.Num() > 0) {
         FGridCell* lowestCostCell = Algo::MinElement(openList, [&](const FGridCell& A, const FGridCell& B) {
             return pathMap[A].getCost() < pathMap[B].getCost();
             });
 
         if (!lowestCostCell) break;
 
-        FGridCell currentCell = *lowestCostCell;
+        FGridCell CurrentCell = *lowestCostCell;
+        UE_LOG(LogAStar, Log, TEXT("Processing node: (%d, %d) with cost %d"), CurrentCell.X, CurrentCell.Y, pathMap[CurrentCell].getCost());
 
-        // if we reach the goal, reconstruct the path
-        if (currentCell == target) 
-        {
+        if (CurrentCell == target) {
+            UE_LOG(LogAStar, Log, TEXT("Target reached, reconstructing path..."));
             TArray<FGridCell> path;
-            while (currentCell != start)
-            {
-                path.Add(currentCell);
-                currentCell = pathMap[currentCell].parent;
+            while (CurrentCell != start) {
+                path.Add(CurrentCell);
+                CurrentCell = pathMap[CurrentCell].parent;
             }
-            //path.Insert(start, 0); // insert start at the beginning of the path (needed? Not so sure.)
+            UE_LOG(LogAStar, Log, TEXT("Path found with %d nodes."), path.Num());
             return path;
         }
 
-        // move current cell to closed list
-        openList.Remove(currentCell);
-        closedSet.Add(currentCell);
+        openList.Remove(CurrentCell);
+        closedSet.Add(CurrentCell);
 
-        // get neighbors of the current cell
-        TArray<FGridCell> neighbors = GetNeighbors(currentCell, grid);
+        TArray<FGridCell> Neighbors = GetNeighbors(CurrentCell);
 
-        // loop through neighbors
-        for (const FGridCell& neighbor : neighbors) 
-        {
-            if (closedSet.Contains(neighbor))
-            {
+        for (const FGridCell& Neighbor : Neighbors) {
+            if (closedSet.Contains(Neighbor)) {
+                UE_LOG(LogAStar, Log, TEXT("Skipping neighbor (%d, %d) as it's already processed."), Neighbor.X, Neighbor.Y);
                 continue;
             }
 
-            // calculate G cost for this neighbor
-            int costSoFar = pathMap[currentCell].costSoFar + 1;
-            bool bIsNewNode = !pathMap.Contains(neighbor);
-            if (bIsNewNode || costSoFar <  pathMap[neighbor].costSoFar)
-            {
-                // update cost annd parent
-                pathMap.Add(neighbor, FPathfindingData(costSoFar, CalculateCostToTarget(neighbor, target), currentCell));
+            int CostSoFar = pathMap[CurrentCell].costSoFar + 1;
+            bool bIsNewNode = !pathMap.Contains(Neighbor);
+            if (bIsNewNode || CostSoFar < pathMap[Neighbor].costSoFar) {
+                pathMap.Add(Neighbor, FPathfindingData(CostSoFar, CalculateCostToTarget(Neighbor, target), CurrentCell));
 
-                // add the neighbor to the openlist if it isn't already
-                if (!openList.Contains(neighbor)) {
-                    openList.Add(neighbor);
+                if (!openList.Contains(Neighbor)) {
+                    openList.Add(Neighbor);
+                    UE_LOG(LogAStar, Log, TEXT("Added neighbor (%d, %d) to open list."), Neighbor.X, Neighbor.Y);
                 }
             }
         }
     }
-    
-    // if no path was found, return an empty array
+
+    UE_LOG(LogAStar, Warning, TEXT("No path found from (%d, %d) to (%d, %d)."), start.X, start.Y, target.X, target.Y);
     return TArray<FGridCell>();
 }
 
-// Function to calculate distance from cell to target
-int UAStarPathfinding::CalculateCostToTarget(FGridCell start, FGridCell target)
-{
-    // Manhattan distance heuristic
-    return FMath::Abs(start.X - target.X) + FMath::Abs(start.Y - target.Y);
+int UAStarPathfinding::CalculateCostToTarget(FGridCell start, FGridCell target) {
+    int cost = FMath::Abs(start.X - target.X) + FMath::Abs(start.Y - target.Y);
+    UE_LOG(LogAStar, Log, TEXT("Calculated cost from (%d, %d) to (%d, %d) = %d"), start.X, start.Y, target.X, target.Y, cost);
+    return cost;
 }
 
-// Function to enumerate valid neighbors
-TArray<FGridCell> UAStarPathfinding::GetNeighbors(const FGridCell& cell)
-{
-    TArray<FGridCell> neighbors;
+TArray<FGridCell> UAStarPathfinding::GetNeighbors(const FGridCell& cell) {
+    TArray<FGridCell> Neighbors;
 
-    // four possible neighbors
-    TArray<FVector2D> directions = {
-        FVector2D(cellSize, 0), FVector2D(-cellSize, 0), FVector2D(0, cellSize), FVector2D(0, -cellSize)
+    TArray<FVector2D> Directions = {
+        FVector2D(1, 0), FVector2D(-1, 0), FVector2D(0, 1), FVector2D(0, -1)
     };
 
-    // check all directions
-    for (const auto& direction : directions) {
-        FGridCell neighbor = getGridCellFromLocation(cell.X + direction.X, cell.Y + direction.Y);
+    for (const auto& Direction : Directions) {
+        FGridCell Neighbor = grid->GetFromIndex(cell.X + Direction.X, cell.Y + Direction.Y);
 
-        if (neighbor.isWalkable)
-        {
-            neighbors.Add(neighbor);
+        if (Neighbor.isWalkable) {
+            Neighbors.Add(Neighbor);
+            UE_LOG(LogAStar, Log, TEXT("Neighbor (%d, %d) is walkable."), Neighbor.X, Neighbor.Y);
+        } else {
+            UE_LOG(LogAStar, Log, TEXT("Neighbor (%d, %d) is NOT walkable."), Neighbor.X, Neighbor.Y);
         }
     }
 
-    return neighbors;
-}
-
-FGridCell UAStarPathfinding::getGridCellFromLocation(int X, int Y)
-{
-    return grid->GetFromLocation(X, Y);
+    return Neighbors;
 }
