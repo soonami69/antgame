@@ -52,6 +52,7 @@ TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target)
                 path.Add(CurrentCell);
                 CurrentCell = pathMap[CurrentCell].parent;
             }
+            Algo::Reverse(path);
             UE_LOG(LogAStar, Log, TEXT("Path found with %d nodes."), path.Num());
             return path;
         }

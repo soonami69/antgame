@@ -27,7 +27,12 @@ void AGridManager::BeginPlay()
     GenerateGrid();
 }
 
-FVector AGridManager::GetGridWorldLocation(float X, float Y, float Z) const
+FVector AGridManager::GetWorldLocationOfGrid(int X, int Y) const
+{
+    return FVector(X * CellSize + (CellSize / 2), Y * CellSize + (CellSize / 2), 0.f);
+}
+
+FVector AGridManager::GetGridNearestToWorldLocation(float X, float Y, float Z) const
 {
     // p sure this is poor OOP
     int indexX = FMath::RoundToInt((X - (CellSize / 2)) / CellSize);

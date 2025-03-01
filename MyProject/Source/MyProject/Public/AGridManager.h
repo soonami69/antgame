@@ -34,9 +34,13 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Grid")
     TArray<FGridCell> GridCells;
 
+    // Get grid world location from an index
+    UFUNCTION(BlueprintPure, Category="Grid")
+    FVector GetWorldLocationOfGrid(int X, int Y) const;
+
     // Get the coordinates of the nearest cell to a certain location
     UFUNCTION(BlueprintPure, Category="Grid")
-    FVector GetGridWorldLocation(float X, float Y, float Z) const;
+    FVector GetGridNearestToWorldLocation(float X, float Y, float Z) const;
 
     // Convert world location to grid cell
     UFUNCTION(BlueprintCallable, Category="Grid")
