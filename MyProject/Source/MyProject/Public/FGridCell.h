@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "FGridCell.generated.h"
+
+// say no to circular depedencies
+class IPlaceable;
 /**
- * 
+ * Struct that represents a grid cell.
  */
 USTRUCT(BlueprintType)
 struct FGridCell
@@ -21,15 +24,24 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	bool isWalkable;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TScriptInterface<IPlaceable> Placeable;
+
 	// constructor for an "invalid" gridCell
-	FGridCell() : X(INT_MIN), Y(INT_MIN), isWalkable(true) {}
+	FGridCell() : X(INT_MIN), Y(INT_MIN), isWalkable(true), Placeable(nullptr) {}
 
 	// normal constructor
-	FGridCell(int32 inX, int32 inY) : X(inX), Y(inY), isWalkable(true) {}
+	FGridCell(int32 inX, int32 inY) : X(inX), Y(inY), isWalkable(true), Placeable(nullptr) {}
 
 	// equality operator for mapping
 	bool operator==(const FGridCell& other) const {
 		return X == other.X && Y == other.Y;
+	}
+
+	// function to check if there is a valid placeable object
+	bool HasPlaceable() const
+	{
+		return Placeable.GetObject() != nullptr;
 	}
 };
 

@@ -3,6 +3,8 @@
 
 #include "AGridManager.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogPathfinding, Log, All); // Define a log category
+
 void AGridManager::Initialize(int32 Width, int32 Height, float Size)
 {
     this->GridWidth = Width;
@@ -108,6 +110,8 @@ FGridCell AGridManager::GetFromIndex(int X, int Y) const
     {
         return GridCells[Index];
     }
+    UE_LOG(LogPathfinding, Warning, TEXT("Invalid Index: %d, from %d %d"), Index, X, Y);
+    UE_LOG(LogPathfinding, Log, TEXT("Size of array: %d"), GridCells.Num());
     return FGridCell();
 }
 
