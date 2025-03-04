@@ -67,6 +67,7 @@ TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target)
                 UE_LOG(LogAStar, Log, TEXT("Skipping neighbor (%d, %d) as it's already processed."), Neighbor.X, Neighbor.Y);
                 continue;
             }
+            if (Neighbor.X == INT_MIN) continue;
 
             int CostSoFar = pathMap[CurrentCell].costSoFar + 1;
             bool bIsNewNode = !pathMap.Contains(Neighbor);
@@ -75,7 +76,7 @@ TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target)
 
                 if (!openList.Contains(Neighbor)) {
                     openList.Add(Neighbor);
-                    UE_LOG(LogAStar, Log, TEXT("Added neighbor (%d, %d) to open list."), Neighbor.X, Neighbor.Y);
+                    UE_LOG(LogAStar, Log, TEXT("Added neighbor (%d, %d) with cost %d to open list."), Neighbor.X, Neighbor.Y, pathMap[Neighbor].getCost());
                 }
             }
         }
@@ -92,6 +93,7 @@ int UAStarPathfinding::CalculateCostToTarget(FGridCell start, FGridCell target) 
 }
 
 TArray<FGridCell> UAStarPathfinding::GetNeighbors(const FGridCell& cell) {
+    UE_LOG(LogAStar, Log, TEXT("Checking Neighbors of %d %d"), cell.X, cell.Y)
     TArray<FGridCell> Neighbors;
 
     TArray<FVector2D> Directions = {
@@ -100,7 +102,10 @@ TArray<FGridCell> UAStarPathfinding::GetNeighbors(const FGridCell& cell) {
 
     for (const auto& Direction : Directions) {
         FGridCell Neighbor = grid->GetFromIndex(cell.X + Direction.X, cell.Y + Direction.Y);
-
+        if (Neighbor.X == INT_MIN)
+        {
+            continue;
+        }
         if (Neighbor.isWalkable) {
             Neighbors.Add(Neighbor);
             UE_LOG(LogAStar, Log, TEXT("Neighbor (%d, %d) is walkable."), Neighbor.X, Neighbor.Y);

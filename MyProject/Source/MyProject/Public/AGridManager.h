@@ -44,10 +44,10 @@ public:
 
     // Convert world location to grid cell
     UFUNCTION(BlueprintCallable, Category="Grid")
-    FGridCell GetFromLocation(float X, float Y) const;
+    FGridCell& GetFromLocation(float X, float Y);
 
     UFUNCTION(BlueprintCallable, Category="Grid")
-    FGridCell GetFromIndex(int X, int Y) const;
+    FGridCell& GetFromIndex(int X, int Y);
 
     UFUNCTION(BlueprintCallable, Category="Grid")
     bool OccupyCellAtIndex(int X, int Y);

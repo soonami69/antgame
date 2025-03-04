@@ -69,7 +69,7 @@ bool AGridManager::UnoccupyCellAtIndex(int X, int Y)
 
 bool AGridManager::OccupyCellAtLocation(float X, float Y)
 {
-    FGridCell cell = GetFromLocation(X, Y);
+    FGridCell& cell = GetFromLocation(X, Y);
     if (!cell.isWalkable)
     {
         return false;
@@ -81,7 +81,7 @@ bool AGridManager::OccupyCellAtLocation(float X, float Y)
 
 bool AGridManager::UnoccupyCellAtLocation(float X, float Y)
 {
-    FGridCell cell = GetFromLocation(X, Y);
+    FGridCell& cell = GetFromLocation(X, Y);
     if (cell.isWalkable) {
         return false;
     } else {
@@ -94,29 +94,16 @@ void AGridManager::GenerateGrid()
 {
     GridCells = TArray<FGridCell>();
 
-    for (int32 X = 0; X < GridWidth; X++)
+    for (int32 Y = 0; Y < GridWidth; Y++)
     {
-        for (int32 Y = 0; Y < GridHeight; Y++)
+        for (int32 X = 0; X < GridHeight; X++)
         {
             GridCells.Add(FGridCell(X, Y)); // is this correct
         }
     }
 }
 
-FGridCell AGridManager::GetFromIndex(int X, int Y) const
-{
-    int Index = convertCoordsToArrayIndex(X, Y);
-    if (Index != -1 && GridCells.IsValidIndex(Index))
-    {
-        return GridCells[Index];
-    }
-    UE_LOG(LogPathfinding, Warning, TEXT("Invalid Index: %d, from %d %d"), Index, X, Y);
-    UE_LOG(LogPathfinding, Log, TEXT("Size of array: %d"), GridCells.Num());
-    return FGridCell();
-}
-
-FGridCell AGridManager::GetFromLocation(float X, float Y) const 
-{
+FGridCell& AGridManager::GetFromLocation(float X, float Y) {
     float halfTile = CellSize / 2;
 
     // Get closest index
@@ -126,6 +113,19 @@ FGridCell AGridManager::GetFromLocation(float X, float Y) const
 
     // return tile
     return GetFromIndex(xIndex, yIndex);
+}
+
+FGridCell& AGridManager::GetFromIndex(int X, int Y) {
+    int Index = convertCoordsToArrayIndex(X, Y);
+    if (Index != -1 && GridCells.IsValidIndex(Index)) {
+        UE_LOG(LogPathfinding, Log, TEXT("Returned index %d from (%d, %d)"), Index, X, Y);
+        return GridCells[Index];
+    }
+
+    UE_LOG(LogPathfinding, Warning, TEXT("Invalid Index: %d, from %d %d"), Index, X, Y);
+
+    static FGridCell InvalidCell; // Declare a persistent invalid cell
+    return InvalidCell;
 }
 
 int AGridManager::convertCoordsToArrayIndex(int X, int Y) const {
