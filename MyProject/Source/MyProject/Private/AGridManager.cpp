@@ -94,9 +94,9 @@ void AGridManager::GenerateGrid()
 {
     GridCells = TArray<FGridCell>();
 
-    for (int32 Y = 0; Y < GridWidth; Y++)
+    for (int32 Y = 0; Y < GridHeight; Y++)
     {
-        for (int32 X = 0; X < GridHeight; X++)
+        for (int32 X = 0; X < GridWidth; X++)
         {
             GridCells.Add(FGridCell(X, Y)); // is this correct
         }

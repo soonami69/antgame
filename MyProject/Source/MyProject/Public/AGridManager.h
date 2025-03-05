@@ -21,13 +21,13 @@ public:
 
     // Grid settings
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Settings")
-    int32 GridWidth = 10;
+    int32 GridWidth;
         
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Settings")
-    int32 GridHeight = 10;
+    int32 GridHeight;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Settings")
-    float CellSize = 100.f;
+    float CellSize;
 
     // Storing the grid
     // I am storing it as a 1D array for simplicity's sake... no one has to know
