@@ -118,7 +118,6 @@ FGridCell& AGridManager::GetFromLocation(float X, float Y) {
 FGridCell& AGridManager::GetFromIndex(int X, int Y) {
     int Index = convertCoordsToArrayIndex(X, Y);
     if (Index != -1 && GridCells.IsValidIndex(Index)) {
-        UE_LOG(LogPathfinding, Log, TEXT("Returned index %d from (%d, %d)"), Index, X, Y);
         return GridCells[Index];
     }
 
