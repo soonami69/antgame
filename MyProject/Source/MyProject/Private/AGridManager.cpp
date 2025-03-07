@@ -13,9 +13,9 @@ void AGridManager::Initialize(int32 Width, int32 Height, float Size)
     GenerateGrid();
 }
 
-AGridManager::AGridManager()
+AGridManager::AGridManager() : GridWidth(10), GridHeight(10), CellSize(100.f)
 {
-    
+    // default constructor just cause
 }
 
 AGridManager::AGridManager(int32 Width, int32 Height, float CellSize) : GridWidth(Width), GridHeight(Height), CellSize(CellSize)
@@ -45,54 +45,55 @@ FVector AGridManager::GetGridNearestToWorldLocation(float X, float Y, float Z) c
     return FVector(newX, newY, 0.f);
 }
 
-bool AGridManager::OccupyCellAtIndex(int X, int Y)
+bool AGridManager::OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, AActor* Actor)
 {
-    FGridCell cell = GetFromIndex(X, Y);
-    if (!cell.isWalkable) {
-        return false;
-    } else {
-        cell.isWalkable = false;
-        return true;
-    }
-}
-
-bool AGridManager::UnoccupyCellAtIndex(int X, int Y)
-{
-    FGridCell cell = GetFromIndex(X, Y);
-    if (cell.isWalkable) {
-        return false;
-    } else {
-        cell.isWalkable = true;
-        return true;
-    }
-}
-
-bool AGridManager::OccupyCellAtLocation(float X, float Y)
-{
-    FGridCell& cell = GetFromLocation(X, Y);
-    if (!cell.isWalkable)
+    FGridCell& Cell = GetFromIndex(X, Y);
+    // Check if cell has wall/ant on it. If not, check if it has a type already matching itself (for traps?)
+    if (!Cell.IsWalkable() || Cell.HasOccupant(Type))
     {
         return false;
+    }
+    Cell.SetOccupant(Type, Actor);
+    return true;
+}
+
+bool AGridManager::UnoccupyCellAtIndex(int X, int Y, EGridOccupantType Type)
+{
+    FGridCell& Cell = GetFromIndex(X, Y);
+    if (!Cell.HasOccupant(Type)) {
+        return false;
     } else {
-        cell.isWalkable = false;
+        Cell.RemoveOccupant(Type);
         return true;
     }
 }
 
-bool AGridManager::UnoccupyCellAtLocation(float X, float Y)
+bool AGridManager::OccupyCellAtLocation(float X, float Y, EGridOccupantType Type, AActor* Actor)
 {
-    FGridCell& cell = GetFromLocation(X, Y);
-    if (cell.isWalkable) {
+    FGridCell& Cell = GetFromLocation(X, Y);
+    if (!Cell.IsWalkable() || Cell.HasOccupant(Type)) {
+        return false;
+    }
+    UE_LOG(LogPathfinding, Log, TEXT("Setting Cell at %.3f %.3f to Unwalkable"), X, Y)
+    Cell.SetOccupant(Type, Actor);
+    return true;
+}
+
+bool AGridManager::UnoccupyCellAtLocation(float X, float Y, EGridOccupantType Type)
+{
+    FGridCell& Cell = GetFromLocation(X, Y);
+    if (!Cell.HasOccupant(Type)) {
         return false;
     } else {
-        cell.isWalkable = true;
+        Cell.RemoveOccupant(Type);
         return true;
     }
 }
 
 void AGridManager::GenerateGrid()
 {
-    GridCells = TArray<FGridCell>();
+    GridCells.Empty();
+    GridCells.Reserve(GridWidth * GridHeight);
 
     for (int32 Y = 0; Y < GridHeight; Y++)
     {
@@ -125,6 +126,12 @@ FGridCell& AGridManager::GetFromIndex(int X, int Y) {
 
     static FGridCell InvalidCell; // Declare a persistent invalid cell
     return InvalidCell;
+}
+
+bool AGridManager::IsGridWalkable(float X, float Y)
+{
+    FGridCell& Cell = GetFromLocation(X, Y);
+    return Cell.IsWalkable();
 }
 
 int AGridManager::convertCoordsToArrayIndex(int X, int Y) const {

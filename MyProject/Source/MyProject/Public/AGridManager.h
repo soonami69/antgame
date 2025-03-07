@@ -20,46 +20,48 @@ public:
     AGridManager(int32 Width, int32 Height, float CellSize);
 
     // Grid settings
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Settings")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Configuration")
     int32 GridWidth;
         
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Settings")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Configuration")
     int32 GridHeight;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Settings")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Configuration")
     float CellSize;
 
     // Storing the grid
     // I am storing it as a 1D array for simplicity's sake... no one has to know
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Grid")
     TArray<FGridCell> GridCells;
 
     // Get grid world location from an index
-    UFUNCTION(BlueprintPure, Category="Grid")
+    UFUNCTION(BlueprintPure, Category="GridCell Getters")
     FVector GetWorldLocationOfGrid(int X, int Y) const;
 
     // Get the coordinates of the nearest cell to a certain location
-    UFUNCTION(BlueprintPure, Category="Grid")
+    UFUNCTION(BlueprintPure, Category="GridCell Getters")
     FVector GetGridNearestToWorldLocation(float X, float Y, float Z) const;
 
     // Convert world location to grid cell
-    UFUNCTION(BlueprintCallable, Category="Grid")
+    UFUNCTION(BlueprintCallable, Category="GridCell Getters")
     FGridCell& GetFromLocation(float X, float Y);
 
-    UFUNCTION(BlueprintCallable, Category="Grid")
+    UFUNCTION(BlueprintCallable, Category="GridCell Getters")
     FGridCell& GetFromIndex(int X, int Y);
 
-    UFUNCTION(BlueprintCallable, Category="Grid")
-    bool OccupyCellAtIndex(int X, int Y);
+    UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
+    bool OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, AActor* Actor);
 
-    UFUNCTION(BlueprintCallable, Category="Grid")
-    bool UnoccupyCellAtIndex(int X, int Y);
+    UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
+    bool UnoccupyCellAtIndex(int X, int Y, EGridOccupantType Type);
 
-    UFUNCTION(BlueprintCallable, Category="Grid")
-    bool OccupyCellAtLocation(float X, float Y);
+    UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
+    bool OccupyCellAtLocation(float X, float Y, EGridOccupantType Type, AActor* Actor);
 
-    UFUNCTION(BlueprintCallable, Category = "Grid")
-    bool UnoccupyCellAtLocation(float X, float Y);
+    UFUNCTION(BlueprintCallable, Category = "GridCell Occupant")
+    bool UnoccupyCellAtLocation(float X, float Y, EGridOccupantType Type);
+
+    UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
+    bool IsGridWalkable(float X, float Y);
 
 private:
     // initializes an empty grid

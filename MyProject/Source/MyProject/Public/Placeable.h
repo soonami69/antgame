@@ -25,7 +25,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Location Getters")
 	FGridCell GetCurrentGrid() const;
 
-	// Function to check if the object can be passed through
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Walkable")
-	bool CanBeWalked() const;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Location Setters")
+	void SetCurrentGridAndMove(FGridCell cell);
+
+	// Function to check the type of object
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Type Setters")
+	EGridOccupantType GetOccupantType() const;
 };

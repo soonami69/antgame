@@ -101,12 +101,12 @@ TArray<FGridCell> UAStarPathfinding::GetNeighbors(const FGridCell& cell) {
     };
 
     for (const auto& Direction : Directions) {
-        FGridCell Neighbor = grid->GetFromIndex(cell.X + Direction.X, cell.Y + Direction.Y);
+        FGridCell& Neighbor = grid->GetFromIndex(cell.X + Direction.X, cell.Y + Direction.Y);
         if (Neighbor.X == INT_MIN)
         {
             continue;
         }
-        if (Neighbor.isWalkable) {
+        if (Neighbor.IsWalkable()) {
             Neighbors.Add(Neighbor);
             UE_LOG(LogAStar, Log, TEXT("Neighbor (%d, %d) is walkable."), Neighbor.X, Neighbor.Y);
         } else {
