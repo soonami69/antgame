@@ -22,13 +22,16 @@ class MYPROJECT_API IPlaceable
 	GENERATED_BODY()
 public:
 	// Function to get current grid cell coordinates
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Location Getters")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Placeable Parameters")
 	FGridCell GetCurrentGrid() const;
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Location Setters")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Placeable Parameters")
 	void SetCurrentGridAndMove(FGridCell cell);
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Placeable Parameters")
+	int GetHealth();
+
 	// Function to check the type of object
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Type Setters")
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Placeable Parameters")
 	EGridOccupantType GetOccupantType() const;
 };

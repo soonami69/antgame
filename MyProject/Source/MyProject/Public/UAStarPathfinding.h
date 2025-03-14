@@ -63,7 +63,7 @@ public:
 	// cell sizes
 	UPROPERTY(BlueprintReadWrite)
 	float cellSize;
-private:
+protected:
 
 	UPROPERTY()
 	// GridManager instance
