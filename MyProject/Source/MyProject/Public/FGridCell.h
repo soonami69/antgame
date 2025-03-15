@@ -42,7 +42,7 @@ public:
 	int32 Y;
 
 	EGridOccupantType Occupants = EGridOccupantType::None;
-	TArray<AActor*> OccupantActors; // to collect sugar/whatever when walked on, might change to another type if I ever get to it
+	TArray<TScriptInterface<IPlaceable>> OccupantActors; // to collect sugar/whatever when walked on, might change to another type if I ever get to it
 
 	// constructor for an "invalid" gridCell
 	FGridCell() : X(INT_MIN), Y(INT_MIN) {}
@@ -63,12 +63,35 @@ public:
 		return (Occupants & (EGridOccupantType::Wall | EGridOccupantType::Ant)) == EGridOccupantType::None; // NONE HAS TO BE ZERO
 	}
 
+	bool IsWalkableByBreaking() const
+	{
+		// check 
+		if ((Occupants & (EGridOccupantType::Wall | EGridOccupantType::Ant)) == EGridOccupantType::None)
+		{
+			return true;
+		}
+
+		TScriptInterface<IPlaceable> Wall = GetOccupant(EGridOccupantType::Wall);
+
+		return Wall && Wall->GetHealth() < 0;
+	}
+
+	// returns the cost to enter (i.e. to break the wall)
+	int GetAdditionalCostToEnter() const
+	{
+		if (!HasOccupant(EGridOccupantType::Wall))
+		{
+			return 0;
+		}
+		return GetOccupant(EGridOccupantType::Wall)->GetHealth();
+	}
+
 	bool HasOccupant(EGridOccupantType Type) const
 	{
 		return (Occupants & Type) != EGridOccupantType::None;
 	}
 
-	void SetOccupant(EGridOccupantType Type, AActor* Actor)
+	void SetOccupant(EGridOccupantType Type, TScriptInterface<IPlaceable> Actor)
 	{
 		int32 Index = static_cast<int32>(Type);
 		if (Index < OccupantActors.Num())
@@ -88,11 +111,12 @@ public:
 		}
 	}
 
-	AActor* GetOccupant(EGridOccupantType Type) const
+	TScriptInterface<IPlaceable> GetOccupant(EGridOccupantType Type) const
 	{
 		int32 Index = static_cast<int32>(Type);
 		return (Index < OccupantActors.Num()) ? OccupantActors[Index] : nullptr;
 	}
+
 };
 
 // ChatGPT gave me this hash function

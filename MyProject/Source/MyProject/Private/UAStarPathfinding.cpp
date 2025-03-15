@@ -47,7 +47,7 @@ TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target)
 
         if (CurrentCell == target) {
             UE_LOG(LogAStar, Log, TEXT("Target reached, reconstructing path..."));
-            TArray<FGridCell> path;
+            TArray<FGridCell> path = TArray<FGridCell>();
             while (CurrentCell != start) {
                 path.Add(CurrentCell);
                 CurrentCell = pathMap[CurrentCell].parent;
@@ -67,6 +67,8 @@ TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target)
                 UE_LOG(LogAStar, Log, TEXT("Skipping neighbor (%d, %d) as it's already processed."), Neighbor.X, Neighbor.Y);
                 continue;
             }
+
+            // redundancy check for an invalid neighbor cell
             if (Neighbor.X == INT_MIN) continue;
 
             int CostSoFar = pathMap[CurrentCell].costSoFar + 1;
@@ -82,7 +84,7 @@ TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target)
         }
     }
 
-    UE_LOG(LogAStar, Warning, TEXT("No path found from (%d, %d) to (%d, %d)."), start.X, start.Y, target.X, target.Y);
+    UE_LOG(LogAStar, Log, TEXT("No path found from (%d, %d) to (%d, %d)."), start.X, start.Y, target.X, target.Y);
     return TArray<FGridCell>();
 }
 
