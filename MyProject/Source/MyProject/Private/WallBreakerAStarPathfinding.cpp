@@ -88,7 +88,7 @@ TArray<FGridCell> UWallBreakerAStarPathfinding::FindPath(FGridCell Start, FGridC
     return TArray<FGridCell>();
 }
 
-TArray<FGridCell> UAStarPathfinding::GetNeighbors(const FGridCell& Cell)
+TArray<FGridCell> UWallBreakerAStarPathfinding::GetNeighbors(const FGridCell& Cell)
 {
     TArray<FGridCell> Neighbors;
 

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -11,29 +9,24 @@
 #define ENEMY 3
 #define TOTAL_TYPES 4
 
-// say no to circular depedencies
+// Forward declaration to avoid circular dependency
 class IPlaceable;
 
-/**
- * Enum that represents the current types of objects that are on this grid
- */
 UENUM(BlueprintType)
 enum class EGridOccupantType : uint8 {
-	None = 0 UMETA(DisplayName="None"),
+	None = 0 UMETA(DisplayName = "None"),
 	Wall = 1 << WALL UMETA(DisplayName = "Wall"),
 	Ant = 1 << ANT UMETA(DisplayName = "Ant"),
 	Trap = 1 << TRAP UMETA(DisplayName = "Trap"),
-	// can add more here
 };
+
 ENUM_CLASS_FLAGS(EGridOccupantType);
 
-/**
- * Struct that represents a grid cell.
- */
 USTRUCT(BlueprintType)
 struct FGridCell
 {
 	GENERATED_BODY()
+
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	int32 X;
@@ -42,85 +35,25 @@ public:
 	int32 Y;
 
 	EGridOccupantType Occupants = EGridOccupantType::None;
-	TArray<TScriptInterface<IPlaceable>> OccupantActors; // to collect sugar/whatever when walked on, might change to another type if I ever get to it
+	TArray<TScriptInterface<IPlaceable>> OccupantActors;
 
-	// constructor for an "invalid" gridCell
-	FGridCell() : X(INT_MIN), Y(INT_MIN) {}
+	FGridCell();
+	FGridCell(int32 inX, int32 inY);
 
-	// normal constructor
-	FGridCell(int32 inX, int32 inY) : X(inX), Y(inY) {
-		OccupantActors.SetNum(TOTAL_TYPES);
-	}
+	bool operator==(const FGridCell& other) const;
 
-	// equality operator for mapping
-	bool operator==(const FGridCell& other) const {
-		return X == other.X && Y == other.Y;
-	}
+	bool HasOccupant(EGridOccupantType Type) const;
 
-	// Quick check to see if it is walkable (no ant or wall)
-	bool IsWalkable() const
-	{
-		return (Occupants & (EGridOccupantType::Wall | EGridOccupantType::Ant)) == EGridOccupantType::None; // NONE HAS TO BE ZERO
-	}
-
-	bool IsWalkableByBreaking() const
-	{
-		// check 
-		if ((Occupants & (EGridOccupantType::Wall | EGridOccupantType::Ant)) == EGridOccupantType::None)
-		{
-			return true;
-		}
-
-		TScriptInterface<IPlaceable> Wall = GetOccupant(EGridOccupantType::Wall);
-
-		return Wall && Wall->GetHealth() < 0;
-	}
-
-	// returns the cost to enter (i.e. to break the wall)
-	int GetAdditionalCostToEnter() const
-	{
-		if (!HasOccupant(EGridOccupantType::Wall))
-		{
-			return 0;
-		}
-		return GetOccupant(EGridOccupantType::Wall)->GetHealth();
-	}
-
-	bool HasOccupant(EGridOccupantType Type) const
-	{
-		return (Occupants & Type) != EGridOccupantType::None;
-	}
-
-	void SetOccupant(EGridOccupantType Type, TScriptInterface<IPlaceable> Actor)
-	{
-		int32 Index = static_cast<int32>(Type);
-		if (Index < OccupantActors.Num())
-		{
-			Occupants |= Type;
-			OccupantActors[Index] = Actor;
-		}
-	}
-
-	void RemoveOccupant(EGridOccupantType Type)
-	{
-		int32 Index = static_cast<int32>(Type);
-		if (Index < OccupantActors.Num())
-		{
-			Occupants &= ~Type;
-			OccupantActors[Index] = nullptr;
-		}
-	}
-
-	TScriptInterface<IPlaceable> GetOccupant(EGridOccupantType Type) const
-	{
-		int32 Index = static_cast<int32>(Type);
-		return (Index < OccupantActors.Num()) ? OccupantActors[Index] : nullptr;
-	}
-
+	// Function declarations (implementation moved to cpp)
+	bool IsWalkable() const;
+	bool IsWalkableByBreaking() const;
+	int GetAdditionalCostToEnter() const;
+	void SetOccupant(EGridOccupantType Type, TScriptInterface<IPlaceable> Actor);
+	void RemoveOccupant(EGridOccupantType Type);
+	TScriptInterface<IPlaceable> GetOccupant(EGridOccupantType Type) const;
 };
 
-// ChatGPT gave me this hash function
+// Hash function (moved to cpp)
 FORCEINLINE uint32 GetTypeHash(const FGridCell& Cell) {
 	return HashCombineFast(GetTypeHash(Cell.X), GetTypeHash(Cell.Y));
 }
-
