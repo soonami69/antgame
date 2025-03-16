@@ -45,7 +45,7 @@ FVector AGridManager::GetGridNearestToWorldLocation(float X, float Y, float Z) c
     return FVector(newX, newY, 0.f);
 }
 
-bool AGridManager::OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, AActor* Actor)
+bool AGridManager::OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, TScriptInterface<IPlaceable> Actor)
 {
     FGridCell& Cell = GetFromIndex(X, Y);
     // Check if cell has wall/ant on it. If not, check if it has a type already matching itself (for traps?)
@@ -68,7 +68,7 @@ bool AGridManager::UnoccupyCellAtIndex(int X, int Y, EGridOccupantType Type)
     }
 }
 
-bool AGridManager::OccupyCellAtLocation(float X, float Y, EGridOccupantType Type, AActor* Actor)
+bool AGridManager::OccupyCellAtLocation(float X, float Y, EGridOccupantType Type, TScriptInterface<IPlaceable> Actor)
 {
     FGridCell& Cell = GetFromLocation(X, Y);
     if (!Cell.IsWalkable() || Cell.HasOccupant(Type)) {

@@ -49,13 +49,13 @@ public:
     FGridCell& GetFromIndex(int X, int Y);
 
     UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
-    bool OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, AActor* Actor);
+    bool OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, TScriptInterface<IPlaceable> Actor);
 
     UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
     bool UnoccupyCellAtIndex(int X, int Y, EGridOccupantType Type);
 
     UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
-    bool OccupyCellAtLocation(float X, float Y, EGridOccupantType Type, AActor* Actor);
+    bool OccupyCellAtLocation(float X, float Y, EGridOccupantType Type, TScriptInterface<IPlaceable> Actor);
 
     UFUNCTION(BlueprintCallable, Category = "GridCell Occupant")
     bool UnoccupyCellAtLocation(float X, float Y, EGridOccupantType Type);

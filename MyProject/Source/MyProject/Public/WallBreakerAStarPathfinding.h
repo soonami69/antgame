@@ -16,6 +16,8 @@ class MYPROJECT_API UWallBreakerAStarPathfinding : public UAStarPathfinding
 {
 	GENERATED_BODY()
 public:
-	// Overload of the parent class, UAStarPathfinding::FindPath
+	// Override of the parent class, UAStarPathfinding::FindPath
 	TArray<FGridCell> FindPath(FGridCell Start, FGridCell Target);
+protected:
+	TArray<FGridCell> GetNeighbors(const FGridCell& cell);
 };
