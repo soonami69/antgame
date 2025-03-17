@@ -63,6 +63,9 @@ public:
     UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
     bool IsGridWalkable(float X, float Y);
 
+    UFUNCTION(BlueprintCallable, Category = "GridCell Occupant")
+    TScriptInterface<IPlaceable> GetOccupantAtIndex(int X, int Y, EGridOccupantType Type);
+
 private:
     // initializes an empty grid
     void GenerateGrid();
