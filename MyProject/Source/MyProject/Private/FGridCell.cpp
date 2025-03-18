@@ -4,7 +4,7 @@
 FGridCell::FGridCell() : X(INT_MIN), Y(INT_MIN) {}
 
 FGridCell::FGridCell(int32 inX, int32 inY) : X(inX), Y(inY) {
-	OccupantActors.SetNum(TOTAL_TYPES);
+	OccupantActors.SetNum(1<<TOTAL_TYPES);
 }
 
 bool FGridCell::operator==(const FGridCell& other) const {

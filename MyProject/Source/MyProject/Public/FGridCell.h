@@ -7,7 +7,8 @@
 #define ANT 1
 #define TRAP 2
 #define ENEMY 3
-#define TOTAL_TYPES 4
+#define INTERACTIBLE 4
+#define TOTAL_TYPES 5
 
 // Forward declaration to avoid circular dependency
 class IPlaceable;
@@ -18,6 +19,7 @@ enum class EGridOccupantType : uint8 {
 	Wall = 1 << WALL UMETA(DisplayName = "Wall"),
 	Ant = 1 << ANT UMETA(DisplayName = "Ant"),
 	Trap = 1 << TRAP UMETA(DisplayName = "Trap"),
+	Interactible = 1 << INTERACTIBLE UMETA(DisplayName = "Interactible"),
 };
 
 ENUM_CLASS_FLAGS(EGridOccupantType);

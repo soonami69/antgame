@@ -134,6 +134,11 @@ bool AGridManager::IsGridWalkable(float X, float Y)
     return Cell.IsWalkable();
 }
 
+TScriptInterface<IPlaceable> AGridManager::GetOccupantAtIndex(int X, int Y, EGridOccupantType Type)
+{
+    return GetFromIndex(X, Y).GetOccupant(Type);
+}
+
 int AGridManager::convertCoordsToArrayIndex(int X, int Y) const {
     if (X < 0 || X >= GridWidth || Y < 0 || Y >= GridHeight) {
         return -1;
