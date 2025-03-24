@@ -48,8 +48,11 @@ public:
 
 	// Function declarations (implementation moved to cpp)
 	bool IsWalkable() const;
+
 	bool IsWalkableByBreaking() const;
+
 	int GetAdditionalCostToEnter() const;
+
 	void SetOccupant(EGridOccupantType Type, TScriptInterface<IPlaceable> Actor);
 	void RemoveOccupant(EGridOccupantType Type);
 	TScriptInterface<IPlaceable> GetOccupant(EGridOccupantType Type) const;

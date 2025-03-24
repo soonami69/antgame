@@ -52,6 +52,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Pathfinding")
 	TArray<FGridCell> FindPath(FGridCell start, FGridCell target);
 
+	UFUNCTION(BlueprintCallable, Category="Pathfinding")
+	TArray<FGridCell> FindPathWithCellForbidden(FGridCell start, FGridCell target, FGridCell forbidden);
+
 	~UAStarPathfinding();
 
 	UFUNCTION(BlueprintCallable, Category="Grid Settings")
