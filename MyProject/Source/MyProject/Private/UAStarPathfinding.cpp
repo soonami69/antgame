@@ -115,6 +115,13 @@ TArray<FGridCell> UAStarPathfinding::FindPathWithCellForbidden(FGridCell start, 
         UE_LOG(LogAStar, Log, TEXT("Processing node: (%d, %d) with cost %d"), CurrentCell.X, CurrentCell.Y, pathMap[CurrentCell].getCost());
 
         if (CurrentCell == target) {
+            // This is a case where someone is already at the target.
+            // In this case we will go as close to it as possible, but
+            // not actually step into it
+            if (CurrentCell == forbidden) {
+                // intention is to just set the current to the parent of the target cell and retrieve the path from there.
+                CurrentCell = pathMap[CurrentCell].parent;
+            }
             UE_LOG(LogAStar, Log, TEXT("Target reached, reconstructing path..."));
             TArray<FGridCell> path = TArray<FGridCell>();
             while (CurrentCell != start) {

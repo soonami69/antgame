@@ -133,7 +133,7 @@ FGridCell& AGridManager::GetFromIndex(int X, int Y) {
         return GridCells[Index];
     }
 
-    UE_LOG(LogPathfinding, Warning, TEXT("Invalid Index: %d, from %d %d"), Index, X, Y);
+    UE_LOG(LogPathfinding, Log, TEXT("Invalid Index: %d, from %d %d"), Index, X, Y);
 
     static FGridCell InvalidCell; // Declare a persistent invalid cell
     return InvalidCell;
