@@ -49,6 +49,12 @@ public:
     FGridCell& GetFromIndex(int X, int Y);
 
     UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
+    bool CanActorBePlacedAtIndex(int X, int Y, EGridOccupantType Type);
+
+    UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
+    bool CanActorBePlacedAtLocation(float X, float Y, EGridOccupantType Type);
+
+    UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
     bool OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, TScriptInterface<IPlaceable> Actor);
 
     UFUNCTION(BlueprintCallable, Category="GridCell Occupant")

@@ -45,6 +45,17 @@ FVector AGridManager::GetGridNearestToWorldLocation(float X, float Y, float Z) c
     return FVector(newX, newY, 0.f);
 }
 
+bool AGridManager::CanActorBePlacedAtIndex(int X, int Y, EGridOccupantType Type) {
+    FGridCell& Cell = GetFromIndex(X, Y);
+    return Cell.IsWalkable() && !Cell.HasOccupant(Type);
+}
+
+bool AGridManager::CanActorBePlacedAtLocation(float X, float Y, EGridOccupantType Type)
+{
+    FGridCell& Cell = GetFromLocation(X, Y);
+    return Cell.IsWalkable() && !Cell.HasOccupant(Type);
+}
+
 bool AGridManager::OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, TScriptInterface<IPlaceable> Actor)
 {
     FGridCell& Cell = GetFromIndex(X, Y);
@@ -122,7 +133,7 @@ FGridCell& AGridManager::GetFromIndex(int X, int Y) {
         return GridCells[Index];
     }
 
-    UE_LOG(LogPathfinding, Warning, TEXT("Invalid Index: %d, from %d %d"), Index, X, Y);
+    UE_LOG(LogPathfinding, Log, TEXT("Invalid Index: %d, from %d %d"), Index, X, Y);
 
     static FGridCell InvalidCell; // Declare a persistent invalid cell
     return InvalidCell;

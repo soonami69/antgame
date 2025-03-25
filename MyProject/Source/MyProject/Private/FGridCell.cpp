@@ -17,7 +17,7 @@ bool FGridCell::HasOccupant(EGridOccupantType Type) const
 }
 
 bool FGridCell::IsWalkable() const {
-	return (Occupants & (EGridOccupantType::Wall | EGridOccupantType::Ant)) == EGridOccupantType::None;
+	return (Occupants & (EGridOccupantType::Wall)) == EGridOccupantType::None;
 }
 
 bool FGridCell::IsWalkableByBreaking() const {

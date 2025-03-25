@@ -21,5 +21,5 @@ class MYPROJECT_API ITargetable
 public:
     // Function to get grid coordinates
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Location Getters")
-    FGridCell GetCurrentGrid() const;
+    FGridCell GetOccupiedGrid() const;
 };

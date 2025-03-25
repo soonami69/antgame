@@ -88,6 +88,90 @@ TArray<FGridCell> UAStarPathfinding::FindPath(FGridCell start, FGridCell target)
     return TArray<FGridCell>();
 }
 
+TArray<FGridCell> UAStarPathfinding::FindPathWithCellForbidden(FGridCell start, FGridCell target, FGridCell forbidden) {
+    UE_LOG(LogAStar, Log, TEXT("Starting A* pathfinding from (%d, %d) to (%d, %d)"), start.X, start.Y, target.X, target.Y);
+
+    if (!grid) {
+        UE_LOG(LogAStar, Error, TEXT("GridManager is NULL! Ensure SetGrid() is called before FindPath()."));
+        return TArray<FGridCell>();
+    }
+
+    // initialize all data structures required
+    openList.Empty();
+    closedSet.Empty();
+    pathMap.Empty();
+
+    openList.Add(start);
+    pathMap.Add(start, FPathfindingData(0, CalculateCostToTarget(start, target), FGridCell()));
+
+    while (openList.Num() > 0) {
+        FGridCell* lowestCostCell = Algo::MinElement(openList, [&](const FGridCell& A, const FGridCell& B) {
+            return pathMap[A].getCost() < pathMap[B].getCost();
+            });
+
+        if (!lowestCostCell) break;
+
+        FGridCell CurrentCell = *lowestCostCell;
+        UE_LOG(LogAStar, Log, TEXT("Processing node: (%d, %d) with cost %d"), CurrentCell.X, CurrentCell.Y, pathMap[CurrentCell].getCost());
+
+        if (CurrentCell == target) {
+            // This is a case where someone is already at the target.
+            // In this case we will go as close to it as possible, but
+            // not actually step into it
+            if (CurrentCell == forbidden) {
+                // intention is to just set the current to the parent of the target cell and retrieve the path from there.
+                CurrentCell = pathMap[CurrentCell].parent;
+            }
+            UE_LOG(LogAStar, Log, TEXT("Target reached, reconstructing path..."));
+            TArray<FGridCell> path = TArray<FGridCell>();
+            while (CurrentCell != start) {
+                path.Add(CurrentCell);
+                CurrentCell = pathMap[CurrentCell].parent;
+            }
+            Algo::Reverse(path);
+            UE_LOG(LogAStar, Log, TEXT("Path found with %d nodes."), path.Num());
+            return path;
+        }
+
+        if (CurrentCell == forbidden) {
+            UE_LOG(LogAStar, Log, TEXT("Forbidden node encountered at (%d, %d), skipping..."), CurrentCell.X, CurrentCell.Y);
+            openList.Remove(CurrentCell);
+            closedSet.Add(CurrentCell);
+            continue;
+        }
+
+        openList.Remove(CurrentCell);
+        closedSet.Add(CurrentCell);
+
+        TArray<FGridCell> Neighbors = GetNeighbors(CurrentCell);
+
+        for (const FGridCell& Neighbor : Neighbors) {
+            if (closedSet.Contains(Neighbor)) {
+                UE_LOG(LogAStar, Log, TEXT("Skipping neighbor (%d, %d) as it's already processed."), Neighbor.X, Neighbor.Y);
+                continue;
+            }
+
+            // redundancy check for an invalid neighbor cell
+            if (Neighbor.X == INT_MIN) continue;
+
+            int CostSoFar = pathMap[CurrentCell].costSoFar + 1;
+            bool bIsNewNode = !pathMap.Contains(Neighbor);
+            if (bIsNewNode || CostSoFar < pathMap[Neighbor].costSoFar) {
+                pathMap.Add(Neighbor, FPathfindingData(CostSoFar, CalculateCostToTarget(Neighbor, target), CurrentCell));
+
+                if (!openList.Contains(Neighbor)) {
+                    openList.Add(Neighbor);
+                    UE_LOG(LogAStar, Log, TEXT("Added neighbor (%d, %d) with cost %d to open list."), Neighbor.X, Neighbor.Y, pathMap[Neighbor].getCost());
+                }
+            }
+        }
+    }
+
+    UE_LOG(LogAStar, Log, TEXT("No path found from (%d, %d) to (%d, %d)."), start.X, start.Y, target.X, target.Y);
+    return TArray<FGridCell>();
+}
+
+
 int UAStarPathfinding::CalculateCostToTarget(FGridCell start, FGridCell target) {
     int cost = FMath::Abs(start.X - target.X) + FMath::Abs(start.Y - target.Y);
     UE_LOG(LogAStar, Log, TEXT("Calculated cost from (%d, %d) to (%d, %d) = %d"), start.X, start.Y, target.X, target.Y, cost);
