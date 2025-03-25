@@ -54,6 +54,8 @@ public:
     UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
     bool CanActorBePlacedAtLocation(float X, float Y, EGridOccupantType Type);
 
+    bool CanActorBePlacedAtCell(FGridCell& Cell, EGridOccupantType Type);
+
     UFUNCTION(BlueprintCallable, Category="GridCell Occupant")
     bool OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, TScriptInterface<IPlaceable> Actor);
 

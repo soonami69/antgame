@@ -47,13 +47,30 @@ FVector AGridManager::GetGridNearestToWorldLocation(float X, float Y, float Z) c
 
 bool AGridManager::CanActorBePlacedAtIndex(int X, int Y, EGridOccupantType Type) {
     FGridCell& Cell = GetFromIndex(X, Y);
-    return Cell.IsWalkable() && !Cell.HasOccupant(Type);
+    return CanActorBePlacedAtCell(Cell, Type);
+    
 }
 
 bool AGridManager::CanActorBePlacedAtLocation(float X, float Y, EGridOccupantType Type)
 {
     FGridCell& Cell = GetFromLocation(X, Y);
-    return Cell.IsWalkable() && !Cell.HasOccupant(Type);
+    return CanActorBePlacedAtCell(Cell, Type);
+}
+
+bool AGridManager::CanActorBePlacedAtCell(FGridCell& Cell, EGridOccupantType Type)
+{
+    switch (Type) {
+    case (EGridOccupantType::Wall):
+        return Cell.IsEmpty();
+    case (EGridOccupantType::Ant):
+    case (EGridOccupantType::Enemy):
+        return Cell.IsWalkable() && !Cell.HasOccupant(EGridOccupantType::Ant | EGridOccupantType::Enemy);
+    case (EGridOccupantType::Interactible):
+    case (EGridOccupantType::Trap):
+        return Cell.IsWalkable() && !Cell.HasOccupant(EGridOccupantType::Trap | EGridOccupantType::Interactible);
+    default:
+        return Cell.IsWalkable() && !Cell.HasOccupant(Type);
+    }
 }
 
 bool AGridManager::OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, TScriptInterface<IPlaceable> Actor)
