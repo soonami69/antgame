@@ -19,6 +19,7 @@ enum class EGridOccupantType : uint8 {
 	Wall = 1 << WALL UMETA(DisplayName = "Wall"),
 	Ant = 1 << ANT UMETA(DisplayName = "Ant"),
 	Trap = 1 << TRAP UMETA(DisplayName = "Trap"),
+	Enemy = 1 << ENEMY UMETA(DisplayName = "Enemy"),
 	Interactible = 1 << INTERACTIBLE UMETA(DisplayName = "Interactible"),
 };
 
@@ -28,6 +29,8 @@ USTRUCT(BlueprintType)
 struct FGridCell
 {
 	GENERATED_BODY()
+private:
+	int ConvertTypeToInteger(EGridOccupantType Type) const;
 
 public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -46,6 +49,8 @@ public:
 
 	bool HasOccupant(EGridOccupantType Type) const;
 
+	bool IsEmpty() const;
+
 	// Function declarations (implementation moved to cpp)
 	bool IsWalkable() const;
 
@@ -58,7 +63,6 @@ public:
 	TScriptInterface<IPlaceable> GetOccupant(EGridOccupantType Type) const;
 };
 
-// Hash function (moved to cpp)
 FORCEINLINE uint32 GetTypeHash(const FGridCell& Cell) {
 	return HashCombineFast(GetTypeHash(Cell.X), GetTypeHash(Cell.Y));
 }
