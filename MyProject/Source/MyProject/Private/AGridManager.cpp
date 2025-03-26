@@ -86,7 +86,7 @@ bool AGridManager::OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, TScri
 }
 
 bool AGridManager::UnoccupyCellAtIndex(int X, int Y, EGridOccupantType Type)
-{
+{ 
     FGridCell& Cell = GetFromIndex(X, Y);
     if (!Cell.HasOccupant(Type)) {
         return false;
