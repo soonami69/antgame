@@ -14,7 +14,7 @@ void AGridManager::Initialize(int32 Width, int32 Height, float Size)
     GenerateGrid();
 }
 
-AGridManager::AGridManager() : GridWidth(10), GridHeight(10), CellSize(100.f)
+AGridManager::AGridManager() : GridWidth(0), GridHeight(0), CellSize(100.f)
 {
     // default constructor just cause
 }
@@ -26,7 +26,7 @@ AGridManager::AGridManager(int32 Width, int32 Height, float CellSize) : GridWidt
     this->CellSize = CellSize;
 }
 
-// GPT mode to draw debug box??
+// GPT mode to draw debug box + populate defaults 
 void AGridManager::OnConstruction(const FTransform& Transform)
 {
     Super::OnConstruction(Transform);
@@ -171,17 +171,12 @@ void AGridManager::GenerateGrid()
             int32 RandomIndex = FMath::RandRange(0, GridBlocks.Num() - 1);
             TSubclassOf<AActor> SelectedBlock = GridBlocks[RandomIndex];
 
-            FVector SpawnLocation(X * CellSize + (CellSize / 2), Y * CellSize + (CellSize / 2), 0.0f);
+            FVector SpawnLocation = GetWorldLocationOfGrid(X, Y);
 
             TArray<float> Rotations = { 0.f, 90.f, 180.f, 270.f };
             float RandomYaw = Rotations[FMath::RandRange(0, Rotations.Num() - 1)];
             FRotator SpawnRotation(0.f, RandomYaw, 0.f);
-            // Spawn parameters
-            FActorSpawnParameters SpawnParams;
-            SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-
-            // Spawn the randomly chosen GridBlock
-            GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocation, SpawnRotation, SpawnParams);
+            GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocation, SpawnRotation);
 
         }
     }
