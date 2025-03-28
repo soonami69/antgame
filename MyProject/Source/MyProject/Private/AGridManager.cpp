@@ -4,7 +4,8 @@
 #include "AGridManager.h"
 #include "DrawDebugHelpers.h"  // Include this for debug drawing
 
-DEFINE_LOG_CATEGORY_STATIC(LogPathfinding, Log, All); // Define a log category
+DEFINE_LOG_CATEGORY_STATIC(LogPathfinding, Log, All); 
+DEFINE_LOG_CATEGORY_STATIC(LogGrid, Log, All);// Define a log category
 
 void AGridManager::Initialize(int32 Width, int32 Height, float Size)
 {
@@ -154,19 +155,37 @@ void AGridManager::GenerateGrid()
     GridCells.Empty();
     GridCells.Reserve(GridWidth * GridHeight);
 
+    // handle logic side first
+    for (int32 Y = 0; Y < GridHeight; Y++)
+    {
+        for (int32 X = 0; X < GridWidth; X++)
+        {
+            GridCells.Add(FGridCell(X, Y)); // is this correct
+        }
+    }
+
+    // draw grid
     if (GridBlocks.Num() == 0)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Populate possible bloocks in editor."));
-        return;
+        UE_LOG(LogGrid, Warning, TEXT("Populate possible blocks in editor. Attempting to find backup floor tile by name (UH-OH)."));
+
+        UClass* DirtTileClass = StaticLoadClass(AActor::StaticClass(), nullptr, TEXT("/Game/TopDown/Blueprints/Environment/BP_DirtTile.BP_DirtTile_C"));
+        if (DirtTileClass)
+        {
+            GridBlocks.Add(DirtTileClass);
+            UE_LOG(LogGrid, Log, TEXT("OK we found it PHEW"));
+        }
+        else
+        {
+            UE_LOG(LogGrid, Warning, TEXT("BP_DirtTile not found"));
+            return;
+        }
     }
 
     for (int32 Y = 0; Y < GridHeight; Y++)
     {
         for (int32 X = 0; X < GridWidth; X++)
         {
-            GridCells.Add(FGridCell(X, Y)); // is this correct
-
-
             // choose random block to spawn
             int32 RandomIndex = FMath::RandRange(0, GridBlocks.Num() - 1);
             TSubclassOf<AActor> SelectedBlock = GridBlocks[RandomIndex];
