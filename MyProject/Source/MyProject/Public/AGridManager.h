@@ -19,6 +19,8 @@ public:
     AGridManager();
     AGridManager(int32 Width, int32 Height, float CellSize);
 
+    virtual void OnConstruction(const FTransform& Transform) override;
+
     // Grid settings
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Configuration")
     int32 GridWidth;
@@ -28,6 +30,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Grid Configuration")
     float CellSize;
+
+    UPROPERTY(EditAnywhere, Category = "Grid Configuration")
+    TArray<TSubclassOf<AActor>> GridBlocks;
 
     // Storing the grid
     // I am storing it as a 1D array for simplicity's sake... no one has to know
