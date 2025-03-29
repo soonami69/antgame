@@ -164,22 +164,12 @@ void AGridManager::GenerateGrid()
         }
     }
 
-    // draw grid
+    // draw grid, REMOVE THIS TEMP CODE LATER 
     if (GridBlocks.Num() == 0)
     {
-        UE_LOG(LogGrid, Warning, TEXT("Populate possible blocks in editor. Attempting to find backup floor tile by name (UH-OH)."));
-
-        UClass* DirtTileClass = StaticLoadClass(AActor::StaticClass(), nullptr, TEXT("/Game/TopDown/Blueprints/Environment/BP_DirtTile.BP_DirtTile_C"));
-        if (DirtTileClass)
-        {
-            GridBlocks.Add(DirtTileClass);
-            UE_LOG(LogGrid, Log, TEXT("OK we found it PHEW"));
-        }
-        else
-        {
-            UE_LOG(LogGrid, Warning, TEXT("BP_DirtTile not found"));
-            return;
-        }
+        UE_LOG(LogGrid, Warning, TEXT("Populate possible blocks in editor."));
+        return;
+        
     }
 
     for (int32 Y = 0; Y < GridHeight; Y++)
