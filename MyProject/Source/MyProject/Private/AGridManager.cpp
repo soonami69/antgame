@@ -182,9 +182,7 @@ void AGridManager::GenerateGrid()
 
             FVector SpawnLocation = GetWorldLocationOfGrid(X, Y);
 
-            TArray<float> Rotations = { 0.f, 90.f, 180.f, 270.f };
-            float RandomYaw = Rotations[FMath::RandRange(0, Rotations.Num() - 1)];
-            FRotator SpawnRotation(0.f, RandomYaw, 0.f);
+            FRotator SpawnRotation(0.f, 0.f, 0.f);
             GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocation, SpawnRotation);
 
         }
