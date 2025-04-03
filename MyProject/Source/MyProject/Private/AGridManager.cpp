@@ -2,8 +2,10 @@
 
 
 #include "AGridManager.h"
+#include "DrawDebugHelpers.h"  // Include this for debug drawing
 
-DEFINE_LOG_CATEGORY_STATIC(LogPathfinding, Log, All); // Define a log category
+DEFINE_LOG_CATEGORY_STATIC(LogPathfinding, Log, All); 
+DEFINE_LOG_CATEGORY_STATIC(LogGrid, Log, All);// Define a log category
 
 void AGridManager::Initialize(int32 Width, int32 Height, float Size)
 {
@@ -13,15 +15,45 @@ void AGridManager::Initialize(int32 Width, int32 Height, float Size)
     GenerateGrid();
 }
 
-AGridManager::AGridManager() : GridWidth(10), GridHeight(10), CellSize(100.f)
+AGridManager::AGridManager() : GridWidth(0), GridHeight(0), CellSize(100.f)
 {
     // default constructor just cause
 }
 
 AGridManager::AGridManager(int32 Width, int32 Height, float CellSize) : GridWidth(Width), GridHeight(Height), CellSize(CellSize)
 {
-    
+    this->GridWidth = Width;
+    this->GridHeight = Height;
+    this->CellSize = CellSize;
 }
+
+// GPT mode to draw debug box + populate defaults 
+void AGridManager::OnConstruction(const FTransform& Transform)
+{
+    Super::OnConstruction(Transform);
+
+    FlushPersistentDebugLines(GetWorld());
+
+    float TotalWidth = GridWidth * CellSize;
+    float TotalHeight = GridHeight * CellSize;
+    FVector GridCenter = FVector(TotalWidth / 2.0f, TotalHeight / 2.0f, 0.0f);
+    FVector GridExtent = FVector(TotalWidth / 2.0f, TotalHeight / 2.0f, 0.0f);
+    if (GetWorld() && !GetWorld()->IsGameWorld())
+    {
+        DrawDebugBox(
+            GetWorld(),
+            GridCenter,
+            GridExtent,
+            FQuat::Identity,
+            FColor::Green,
+            true,
+            -1.0f,
+            0,
+            2.0f
+        );
+    }
+}
+
 
 void AGridManager::BeginPlay()
 {
@@ -123,11 +155,36 @@ void AGridManager::GenerateGrid()
     GridCells.Empty();
     GridCells.Reserve(GridWidth * GridHeight);
 
+    // handle logic side first
     for (int32 Y = 0; Y < GridHeight; Y++)
     {
         for (int32 X = 0; X < GridWidth; X++)
         {
             GridCells.Add(FGridCell(X, Y)); // is this correct
+        }
+    }
+
+    // draw grid, REMOVE THIS TEMP CODE LATER 
+    if (GridBlocks.Num() == 0)
+    {
+        UE_LOG(LogGrid, Warning, TEXT("Populate possible blocks in editor."));
+        return;
+        
+    }
+
+    for (int32 Y = 0; Y < GridHeight; Y++)
+    {
+        for (int32 X = 0; X < GridWidth; X++)
+        {
+            // choose random block to spawn
+            int32 RandomIndex = FMath::RandRange(0, GridBlocks.Num() - 1);
+            TSubclassOf<AActor> SelectedBlock = GridBlocks[RandomIndex];
+
+            FVector SpawnLocation = GetWorldLocationOfGrid(X, Y);
+
+            FRotator SpawnRotation(0.f, 0.f, 0.f);
+            GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocation, SpawnRotation);
+
         }
     }
 }
