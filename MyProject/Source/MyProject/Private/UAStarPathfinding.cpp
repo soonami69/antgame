@@ -101,7 +101,7 @@ TArray<FGridCell> UAStarPathfinding::FindPathWithCellForbidden(FGridCell start, 
     }
 
     if (forbidden == start) {
-        UE_LOG(LogAStar, Error, TEXT("Forbidden cell is same as start! This should not happen! Cell: (%d, %d)", forbidden.X, forbidden.Y));
+        UE_LOG(LogAStar, Error, TEXT("Forbidden cell is same as start! This should not happen! Cell: (%d, %d)"), forbidden.X, forbidden.Y);
         return TArray<FGridCell>();
     }
 
