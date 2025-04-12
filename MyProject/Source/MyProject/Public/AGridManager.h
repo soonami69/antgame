@@ -79,6 +79,8 @@ public:
     UFUNCTION(BlueprintCallable, Category = "GridCell Occupant")
     TScriptInterface<IPlaceable> GetOccupantAtIndex(int X, int Y, EGridOccupantType Type);
 
+    static FGridCell InvalidCell;
+
 private:
     // initializes an empty grid
     void GenerateGrid();
