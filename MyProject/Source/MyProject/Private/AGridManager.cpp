@@ -253,3 +253,15 @@ int AGridManager::convertCoordsToArrayIndex(int X, int Y) const {
     }
     return Y * GridWidth + X;
 }
+
+bool const AGridManager::DoesGridHaveOccupantAtLocation(float X, float Y, EGridOccupantType Type)
+{
+    FGridCell& Cell = GetFromLocation(X, Y);
+    return Cell.HasOccupant(Type);
+}
+
+bool const AGridManager::DoesGridHaveOccupantAtIndex(int X, int Y, EGridOccupantType Type)
+{
+    FGridCell& Cell = GetFromIndex(X, Y);
+    return Cell.HasOccupant(Type);
+}
