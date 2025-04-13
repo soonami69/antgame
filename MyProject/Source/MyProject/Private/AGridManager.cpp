@@ -27,6 +27,8 @@ AGridManager::AGridManager(int32 Width, int32 Height, float CellSize) : GridWidt
     this->CellSize = CellSize;
 }
 
+FGridCell AGridManager::InvalidCell = FGridCell();
+
 // GPT mode to draw debug box + populate defaults 
 void AGridManager::OnConstruction(const FTransform& Transform)
 {
@@ -79,6 +81,10 @@ FVector AGridManager::GetGridNearestToWorldLocation(float X, float Y, float Z) c
 
 bool AGridManager::CanActorBePlacedAtIndex(int X, int Y, EGridOccupantType Type) {
     FGridCell& Cell = GetFromIndex(X, Y);
+    if (Cell.X < 0 || Cell.Y < 0)
+    {
+        return false;
+    }
     return CanActorBePlacedAtCell(Cell, Type);
     
 }
@@ -86,6 +92,9 @@ bool AGridManager::CanActorBePlacedAtIndex(int X, int Y, EGridOccupantType Type)
 bool AGridManager::CanActorBePlacedAtLocation(float X, float Y, EGridOccupantType Type)
 {
     FGridCell& Cell = GetFromLocation(X, Y);
+    if (Cell.X < 0 || Cell.Y < 0) {
+        return false;
+    }
     return CanActorBePlacedAtCell(Cell, Type);
 }
 
@@ -109,6 +118,10 @@ bool AGridManager::OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, TScri
 {
     FGridCell& Cell = GetFromIndex(X, Y);
     // Check if cell has wall/ant on it. If not, check if it has a type already matching itself (for traps?)
+    if (Cell == InvalidCell) 
+    {
+        return false;
+    }
     if (!Cell.IsWalkable() || Cell.HasOccupant(Type))
     {
         return false;
@@ -120,6 +133,10 @@ bool AGridManager::OccupyCellAtIndex(int X, int Y, EGridOccupantType Type, TScri
 bool AGridManager::UnoccupyCellAtIndex(int X, int Y, EGridOccupantType Type)
 { 
     FGridCell& Cell = GetFromIndex(X, Y);
+    if (Cell == InvalidCell)
+    {
+        return false;
+    }
     if (!Cell.HasOccupant(Type)) {
         return false;
     } else {
@@ -131,6 +148,9 @@ bool AGridManager::UnoccupyCellAtIndex(int X, int Y, EGridOccupantType Type)
 bool AGridManager::OccupyCellAtLocation(float X, float Y, EGridOccupantType Type, TScriptInterface<IPlaceable> Actor)
 {
     FGridCell& Cell = GetFromLocation(X, Y);
+    if (Cell == InvalidCell) {
+        return false;
+    }
     if (!Cell.IsWalkable() || Cell.HasOccupant(Type)) {
         return false;
     }
@@ -142,6 +162,9 @@ bool AGridManager::OccupyCellAtLocation(float X, float Y, EGridOccupantType Type
 bool AGridManager::UnoccupyCellAtLocation(float X, float Y, EGridOccupantType Type)
 {
     FGridCell& Cell = GetFromLocation(X, Y);
+    if (Cell == InvalidCell) {
+        return false;
+    }
     if (!Cell.HasOccupant(Type)) {
         return false;
     } else {
@@ -209,7 +232,7 @@ FGridCell& AGridManager::GetFromIndex(int X, int Y) {
 
     UE_LOG(LogPathfinding, Log, TEXT("Invalid Index: %d, from %d %d"), Index, X, Y);
 
-    static FGridCell InvalidCell; // Declare a persistent invalid cell
+   
     return InvalidCell;
 }
 
