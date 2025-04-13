@@ -79,6 +79,12 @@ public:
     UFUNCTION(BlueprintCallable, Category = "GridCell Occupant")
     TScriptInterface<IPlaceable> GetOccupantAtIndex(int X, int Y, EGridOccupantType Type);
 
+    UFUNCTION(BlueprintCallable, Category = "GridCell Occupant")
+    bool const DoesGridHaveOccupantAtLocation(float X, float Y, EGridOccupantType Type);
+
+    UFUNCTION(BlueprintCallable, Category = "GridCell Occupant")
+    bool const DoesGridHaveOccupantAtIndex(int X, int Y, EGridOccupantType Type);
+
     static FGridCell InvalidCell;
 
 private:
