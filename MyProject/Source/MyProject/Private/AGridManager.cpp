@@ -210,35 +210,35 @@ void AGridManager::GenerateGrid()
 
         }
     }
+    if (BorderBlocks.Num() > 0) {
+        // Instantiate border from (-1, -1) to (X + 1, -1) AND from (-1, Y + 1) to (X + 1, Y + 1)
+        for (int32 X = -1; X < GridWidth + 1; X++) {
+            // choose random block to spawn
+            int32 RandomIndex = FMath::RandRange(0, GridBlocks.Num() - 1);
+            TSubclassOf<AActor> SelectedBlock = BorderBlocks[RandomIndex];
 
-    // Instantiate border from (-1, -1) to (X + 1, -1) AND from (-1, Y + 1) to (X + 1, Y + 1)
-    for (int32 X = -1; X < GridWidth + 1; X++) {
-        // choose random block to spawn
-        int32 RandomIndex = FMath::RandRange(0, GridBlocks.Num() - 1);
-        TSubclassOf<AActor> SelectedBlock = BorderBlocks[RandomIndex];
+            FVector SpawnLocationOne = GetWorldLocationOfGrid(X, -1);
 
-        FVector SpawnLocationOne = GetWorldLocationOfGrid(X, -1);
+            FVector SpawnLocationTwo = GetWorldLocationOfGrid(X, GridHeight);
 
-        FVector SpawnLocationTwo = GetWorldLocationOfGrid(X, GridHeight);
+            FRotator SpawnRotation(0.f, 0.f, 0.f);
+            GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocationOne, SpawnRotation);
+            GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocationTwo, SpawnRotation);
+        }
+        // Instantiate border from (-1, 0) to (-1, Y) AND from (X + 1, 0) to (X + 1, Y)
+        for (int32 Y = 0; Y < GridHeight; Y++) {
+            // choose random block to spawn
+            int32 RandomIndex = FMath::RandRange(0, GridBlocks.Num() - 1);
+            TSubclassOf<AActor> SelectedBlock = BorderBlocks[RandomIndex];
 
-        FRotator SpawnRotation(0.f, 0.f, 0.f);
-        GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocationOne, SpawnRotation);
-        GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocationTwo, SpawnRotation);
-    }
+            FVector SpawnLocationOne = GetWorldLocationOfGrid(-1, Y);
 
-    // Instantiate border from (-1, 0) to (-1, Y) AND from (X + 1, 0) to (X + 1, Y)
-    for (int32 Y = 0; Y < GridHeight; Y++) {
-        // choose random block to spawn
-        int32 RandomIndex = FMath::RandRange(0, GridBlocks.Num() - 1);
-        TSubclassOf<AActor> SelectedBlock = BorderBlocks[RandomIndex];
+            FVector SpawnLocationTwo = GetWorldLocationOfGrid(GridWidth, Y);
 
-        FVector SpawnLocationOne = GetWorldLocationOfGrid(-1, Y);
-
-        FVector SpawnLocationTwo = GetWorldLocationOfGrid(GridWidth, Y);
-
-        FRotator SpawnRotation(0.f, 0.f, 0.f);
-        GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocationOne, SpawnRotation);
-        GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocationTwo, SpawnRotation);
+            FRotator SpawnRotation(0.f, 0.f, 0.f);
+            GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocationOne, SpawnRotation);
+            GetWorld()->SpawnActor<AActor>(SelectedBlock, SpawnLocationTwo, SpawnRotation);
+        }
     }
 }
 
