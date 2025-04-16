@@ -34,6 +34,9 @@ public:
     UPROPERTY(EditAnywhere, Category = "Grid Configuration")
     TArray<TSubclassOf<AActor>> GridBlocks;
 
+    UPROPERTY(EditAnywhere, Category = "Grid Configuration")
+    TArray<TSubclassOf<AActor>> BorderBlocks;
+
     // Storing the grid
     // I am storing it as a 1D array for simplicity's sake... no one has to know
     TArray<FGridCell> GridCells;
